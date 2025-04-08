@@ -59,7 +59,7 @@ Factify is an advanced real-time fact-checking platform designed to verify scien
 
 1. Clone the repository:
    ```
-   git clone https://github.com/your-org/factify.git
+   git clone https://github.com/your-org/factify.git](https://github.com/CMPT-276-SPRING-2025/final-project-15-mountains
    cd factify
    ```
 
