@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main" ] # Triggers on push to main
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main" ] # Triggers on PRs targeting main
 
 jobs:
   backend-tests:
@@ -12,20 +12,27 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: CMPT-276-final-project/backend
+        # Set working directory to the backend folder
+        working-directory: backend
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.9" # Use the Python version specified
 
       - name: Install Backend Dependencies
         run: pip install -r requirements.txt
 
+      - name: Create Test Environment File
+        run: |
+          cp .env.example .env
+          sed -i 's#DATABASE_URL=.*#DATABASE_URL=sqlite:///./test_factify_rag.db#' .env
+
       - name: Run Backend Tests
+        # Discover and run tests in the 'tests' subdirectory
         run: python -m unittest discover -s tests
 
   frontend-tests:
@@ -33,19 +40,24 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: CMPT-276-final-project
+        # Run commands from the src directory where package.json is located
+        working-directory: ./src
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: "20" # Use the Node.js version specified
+          cache: "npm" # Cache npm dependencies
+          # Specify the path to the lock file relative to the repository root
+          cache-dependency-path: src/package-lock.json
 
       - name: Install Frontend Dependencies
+        # Install dependencies defined in src/package.json
         run: npm install
 
       - name: Run Frontend Tests
-        run: npm run test
+        # Run the test script defined in src/package.json
+        run: npm test 
