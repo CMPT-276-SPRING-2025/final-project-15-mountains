@@ -58,30 +58,50 @@ Factify is an advanced real-time fact-checking platform designed to verify scien
 ### Installation
 
 1. Clone the repository:
-   ```
-   git clone https://github.com/your-org/factify.git](https://github.com/CMPT-276-SPRING-2025/final-project-15-mountains
-   cd factify
+   ```bash
+   git clone https://github.com/CMPT-276-SPRING-2025/final-project-15-mountains.git
+   cd final-project-15-mountains
    ```
 
 2. Set up the backend:
-   ```
+   ```bash
    cd src/backend
-   pip install -r requirements.txt
-   cp .env.example .env
-   # Update the .env file with your API keys and Supabase credentials
    ```
 
-3. Set up the frontend:
+   **For Linux/macOS:**
+   ```bash
+   pip install -r requirements.txt
    ```
-   cd ../
+
+   **For Windows users:**
+   `faiss-cpu` cannot be installed via pip on Windows by default. Please follow these steps:
+
+   - First, install `faiss-cpu` via conda:
+     ```bash
+     conda install -c pytorch faiss-cpu
+     ```
+   - Then install the remaining dependencies:
+     ```bash
+     pip install -r requirements.txt --no-deps
+     ```
+
+   - Copy and update your environment variables:
+     ```bash
+     cp .env.example .env
+     # Update the .env file with your API keys
+     ```
+
+3. Set up the frontend:
+   ```bash
+   cd src/frontend
    npm install
    ```
 
 4. Run the application:
-   ```
+   ```bash
    # In one terminal (from the src directory)
    python backend/app.py
-   
+
    # In another terminal (from the src directory)
    npm run dev
    ```
