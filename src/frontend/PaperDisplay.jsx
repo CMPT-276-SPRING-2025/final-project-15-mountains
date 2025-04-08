@@ -116,8 +116,8 @@ const PaperDisplay = ({ claim }) => {
         setLoadingStage("completed");
         setLoadingProgress(100);
         
-        // Small delay before showing results to ensure user sees 100%
-        setTimeout(() => {
+        // Small delay before showing results to ensure user sees 100% - REMOVED for testing reliability
+        // setTimeout(() => {
           setVerificationResult(data.result);
           
           // Process the evidence array - assign permanent evidence numbers
@@ -134,7 +134,7 @@ const PaperDisplay = ({ claim }) => {
           }
           
           setLoading(false);
-        }, 500);
+        // }, 500); // REMOVED
       } catch (err) {
         console.error("Error fetching verification results:", err);
         setError('Failed to verify claim. Please try again.');

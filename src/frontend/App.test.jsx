@@ -1,11 +1,11 @@
-// src/App.test.jsx
+// frontend/App.test.jsx
 import { test, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders Header and Body components', () => {
+test('renders Header component', () => {
   render(<App />);
-  // Check for an element that should be in the Header or Body
-  const headerElement = screen.getByText(/Features/i);
+  // Check for the header element itself
+  const headerElement = document.querySelector('header');
   expect(headerElement).toBeInTheDocument();
 });

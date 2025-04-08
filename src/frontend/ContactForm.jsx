@@ -14,7 +14,7 @@ export default function ContactForm() {
   });
 
   // Replace this with your Web3Forms access key
-  const apiKey = 'YOUR_WEB3FORMS_API_KEY';
+  const apiKey = '7031c37c-7543-4e0d-8fb3-3cafa18f20ea';
 
   const handleChange = (e) => {
     setFormData({
