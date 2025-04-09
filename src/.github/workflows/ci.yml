@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        # Set working directory to the backend folder
-        working-directory: backend
+        # Set working directory to the src/backend folder
+        working-directory: src/backend
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -40,8 +40,8 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        # Run commands from the root directory where package.json is located
-        working-directory: .
+        # Run commands from the src directory where package.json is located
+        working-directory: ./src
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -51,11 +51,13 @@ jobs:
         with:
           node-version: "20" # Use the Node.js version specified
           cache: "npm" # Cache npm dependencies
+          # Specify the path to the lock file relative to the repository root
+          cache-dependency-path: src/package-lock.json
 
       - name: Install Frontend Dependencies
-        # Install dependencies defined in the root package.json
+        # Install dependencies defined in src/package.json
         run: npm install
 
       - name: Run Frontend Tests
-        # Run the test script defined in the root package.json
+        # Run the test script defined in src/package.json
         run: npm test 

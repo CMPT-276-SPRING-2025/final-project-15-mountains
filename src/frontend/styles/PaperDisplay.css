@@ -347,17 +347,17 @@
 
 /* Style for filtered evidence links */
 .evidence-link-filtered {
-  color: #9ca3af !important;
-  text-decoration: line-through;
-  background-color: rgba(156, 163, 175, 0.1);
-  cursor: not-allowed;
+  color: var(--text-muted);
+  padding: 1px 3px;
+  border-radius: 3px;
+  opacity: 0.6;
+  cursor: help;
+  font-style: italic;
 }
 
 .evidence-link-filtered:hover {
-  color: #6b7280 !important;
-  background-color: rgba(156, 163, 175, 0.2);
-  transform: none;
-  box-shadow: none;
+  opacity: 0.8;
+  color: var(--text-muted-dark);
 }
 
 @media (min-width: 768px) {

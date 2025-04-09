@@ -22,17 +22,15 @@ const PaperDisplay = ({ claim }) => {
   const [filteredEvidence, setFilteredEvidence] = useState([]);
   
   // Filter state variables
-  const [sourceFilter, setSourceFilter] = useState('All Sources');
-  const [startYear, setStartYear] = useState(2000);
-  const [endYear, setEndYear] = useState(2025);
-  const [relevanceScore, setRelevanceScore] = useState(0);
-  const [sortBy, setSortBy] = useState('Relevance');
-  
-  // Min and max years for date range
   const MIN_YEAR = 1980;
   const MAX_YEAR = 2025;
   const YEAR_RANGE = MAX_YEAR - MIN_YEAR;
-
+  const [sourceFilter, setSourceFilter] = useState('All Sources');
+  const [startYear, setStartYear] = useState(MIN_YEAR);
+  const [endYear, setEndYear] = useState(MAX_YEAR);
+  const [relevanceScore, setRelevanceScore] = useState(0);
+  const [sortBy, setSortBy] = useState('Relevance');
+  
   // Add scroll tracking
   useEffect(() => {
     const handleScroll = () => {
