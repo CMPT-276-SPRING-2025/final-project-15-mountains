@@ -23,6 +23,11 @@ body {
   line-height: 1.5;
 }
 
+/* General Clickable Elements */
+a, button {
+  cursor: pointer;
+}
+
 main {
   background-image: linear-gradient(rgba(93, 156, 245, 0.05) 1px, transparent 1px),
                     linear-gradient(90deg, rgba(93, 156, 245, 0.05) 1px, transparent 1px);

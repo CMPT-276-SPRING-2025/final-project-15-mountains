@@ -50,6 +50,7 @@ export default function Body() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={handleKeyPress}
+              autoFocus
             />
             <div className="search-button-wrapper">
               <MagneticElement strength={40}>
