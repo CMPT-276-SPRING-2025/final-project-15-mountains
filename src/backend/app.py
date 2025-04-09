@@ -50,9 +50,14 @@ app.config.update(
     # --- Database Config ---
     DATABASE_URL=os.getenv('DATABASE_URL', 'postgresql://postgres:password@localhost:5432/postgres'),
     EMBEDDING_MODEL=os.getenv('EMBEDDING_MODEL', 'all-MiniLM-L6-v2'),
-    MAX_EVIDENCE_TO_RETRIEVE=int(os.getenv('MAX_EVIDENCE_TO_RETRIEVE', '200')), # Increased from 20 to 200 per source
-    MAX_EVIDENCE_TO_STORE=int(os.getenv('MAX_EVIDENCE_TO_STORE', '400')), # Increased from 50 to 400 total
-    RAG_TOP_K=int(os.getenv('RAG_TOP_K', '20')), # Number of chunks for RAG analysis
+    # --- NEW: Specific API Result Limits ---
+    OPENALEX_MAX_RESULTS=int(os.getenv('OPENALEX_MAX_RESULTS', '100')), # Default 100
+    CROSSREF_MAX_RESULTS=int(os.getenv('CROSSREF_MAX_RESULTS', '100')), # Default 100
+    SEMANTIC_SCHOLAR_MAX_RESULTS=int(os.getenv('SEMANTIC_SCHOLAR_MAX_RESULTS', '100')), # Default 100
+    # --- Old Variable (keep MAX_EVIDENCE_TO_STORE) ---
+    # MAX_EVIDENCE_TO_RETRIEVE=int(os.getenv('MAX_EVIDENCE_TO_RETRIEVE', '200')), # Increased from 20 to 200 per source
+    MAX_EVIDENCE_TO_STORE=int(os.getenv('MAX_EVIDENCE_TO_STORE', '800')), # Increased from 50 to 400 total
+    RAG_TOP_K=int(os.getenv('RAG_TOP_K', '75')), # Number of chunks for RAG analysis
 
 )
 
@@ -529,8 +534,8 @@ class OpenAlexService:
         # Join keywords for search query if it's a list
         search_query = keywords if isinstance(keywords, str) else " ".join(keywords)
         
-        # OpenAlex limits to 200 results per page, enforcing a safe limit
-        per_page = min(per_page, 100)  # Cap at 100 to avoid 403 errors
+        # Use the requested per_page, but cap at the API maximum (200)
+        per_page = min(per_page, 200)
         
         params = {
             'search': search_query,
@@ -551,13 +556,14 @@ class OpenAlexService:
             if response.status_code == 429:
                 logger.warning("OpenAlex rate limit hit, sleeping for 2 seconds.")
                 time.sleep(2)
-                return self.search_works_by_keyword(keywords, per_page) # Retry
+                # Retry with the *same* per_page value
+                return self.search_works_by_keyword(keywords, per_page)
                 
             # Handle forbidden errors
             if response.status_code == 403:
                 logger.warning("OpenAlex returned 403 Forbidden. Trying with smaller batch size.")
+                # Retry with a smaller batch size only if current is > 25
                 if per_page > 25:
-                    # Retry with a much smaller batch size
                     return self.search_works_by_keyword(keywords, 25)
                 else:
                     # If we're already using a small batch size, it's some other issue
@@ -625,8 +631,8 @@ class CrossRefService:
         # Join keywords for search query if it's a list
         search_query = keywords if isinstance(keywords, str) else " ".join(keywords)
         
-        # Cap rows at 100 for stability and to avoid server-side rejections
-        rows = min(rows, 100)
+        # Use the requested rows, but cap at the API maximum (1000)
+        rows = min(rows, 1000)
         
         params = {
             'query.bibliographic': search_query,
@@ -647,13 +653,14 @@ class CrossRefService:
             if response.status_code == 429:
                 logger.warning("CrossRef rate limit hit, sleeping for 2 seconds.")
                 time.sleep(2)
+                # Retry with the *same* rows value
                 return self.search_works_by_keyword(keywords, rows)
                 
             # Handle other error responses
             if response.status_code >= 400:
                 logger.warning(f"CrossRef returned error {response.status_code}. Trying with smaller batch size.")
+                # Retry with a smaller batch size only if current rows > 25
                 if rows > 25:
-                    # Retry with a smaller batch size
                     return self.search_works_by_keyword(keywords, 25)
                 else:
                     logger.error(f"CrossRef error {response.status_code} even with small batch size: {response.text}")
@@ -717,48 +724,106 @@ class SemanticScholarService:
         self.timeout = 20
 
     def search_works_by_keyword(self, keywords, limit=10):
-        """Search Semantic Scholar works using keyword query."""
+        """Search Semantic Scholar works using keyword query with pagination support."""
         search_query = keywords if isinstance(keywords, str) else " ".join(keywords)
-        limit = min(limit, 100) # API max limit is 100
-
-        # Define the fields we want to retrieve - using correct field names
+        
+        # Desired total limit from config - may require multiple requests with pagination
+        desired_total_limit = limit
+        
+        # API max per request (hard limit)
+        api_request_limit = 100
+        
+        all_results_data = []
+        current_offset = 0
+        total_available = 0  # Will be populated from first response
+        
+        # Define fields consistent with original implementation
         fields = 'externalIds,title,authors,year,abstract,citationCount,publicationDate,journal'
 
-        params = {
-            'query': search_query,
-            'limit': limit,
-            'fields': fields,
-            'offset': 0 # Start from the beginning
+        logger.info(f"Starting paginated search on Semantic Scholar for: '{search_query}', target: {desired_total_limit} results")
+        
+        # Continue fetching until we have enough results or run out of available results
+        while len(all_results_data) < desired_total_limit:
+            # Calculate how many more results we need for this request
+            remaining_to_fetch = desired_total_limit - len(all_results_data)
+            # Respect API's per-request limit
+            limit_for_request = min(remaining_to_fetch, api_request_limit)
+            
+            params = {
+                'query': search_query,
+                'limit': limit_for_request,
+                'fields': fields,
+                'offset': current_offset
+            }
+            
+            logger.info(f"Querying Semantic Scholar: offset={current_offset}, limit={limit_for_request}")
+            
+            try:
+                response = requests.get(
+                    f"{self.BASE_URL}/paper/search",
+                    params=params,
+                    headers=self.headers,
+                    timeout=self.timeout
+                )
+
+                # Handle rate limiting (HTTP 429)
+                if response.status_code == 429:
+                    logger.warning(f"Semantic Scholar rate limit hit at offset {current_offset}. Sleeping for 2 seconds.")
+                    time.sleep(2)
+                    continue  # Retry the same request after waiting
+
+                # Handle other errors
+                if response.status_code >= 400:
+                    logger.error(f"Semantic Scholar API request failed with status {response.status_code} at offset {current_offset}: {response.text}")
+                    break  # Stop pagination on other errors
+
+                response.raise_for_status()
+                page_data = response.json()
+                
+                # Get papers from this page
+                papers_on_page = page_data.get('data', [])
+                
+                # On first page, capture total available results
+                if current_offset == 0 and 'total' in page_data:
+                    total_available = page_data['total']
+                    logger.info(f"Semantic Scholar reports {total_available} total available results")
+                
+                # If no papers returned, we've reached the end
+                if not papers_on_page:
+                    logger.info(f"No more papers returned from Semantic Scholar at offset {current_offset}")
+                    break
+                
+                # Add this page's papers to our collection
+                all_results_data.extend(papers_on_page)
+                logger.info(f"Retrieved {len(papers_on_page)} papers from Semantic Scholar (offset {current_offset}). Total so far: {len(all_results_data)}/{desired_total_limit}")
+                
+                # Prepare for next page
+                current_offset += len(papers_on_page)
+                
+                # If we've retrieved all available results, stop
+                if total_available > 0 and current_offset >= total_available:
+                    logger.info(f"Retrieved all available {total_available} papers from Semantic Scholar")
+                    break
+                
+                # Optional: Small delay between requests to be kind to the API
+                if len(all_results_data) < desired_total_limit:
+                    time.sleep(0.5)
+                
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Semantic Scholar API request failed at offset {current_offset}: {e}")
+                break
+            except json.JSONDecodeError as e:
+                logger.error(f"Failed to decode Semantic Scholar JSON response at offset {current_offset}: {e}")
+                break
+        
+        # Return in a format compatible with the existing process_results method
+        combined_results = {
+            'data': all_results_data,
+            'total': total_available
         }
-        logger.info(f"Querying Semantic Scholar: {search_query} with limit={limit}")
-        try:
-            response = requests.get(
-                f"{self.BASE_URL}/paper/search",
-                params=params,
-                headers=self.headers,
-                timeout=self.timeout
-            )
-
-            # Handle rate limiting (HTTP 429)
-            if response.status_code == 429:
-                logger.warning("Semantic Scholar rate limit hit, sleeping for 2 seconds.")
-                time.sleep(2)
-                # Retry the request after waiting (previously returned None)
-                return self.search_works_by_keyword(keywords, limit)
-
-            # Handle other potential errors
-            if response.status_code >= 400:
-                logger.error(f"Semantic Scholar API request failed with status {response.status_code}: {response.text}")
-                return None
-
-            response.raise_for_status() # Raise HTTP errors for other codes (e.g., 5xx)
-            return response.json()
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Semantic Scholar API request failed: {e}")
-            return None
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to decode Semantic Scholar JSON response: {e}")
-            return None
+        
+        logger.info(f"Completed Semantic Scholar paginated search. Retrieved {len(all_results_data)}/{desired_total_limit} results.")
+        return combined_results
 
     def process_results(self, results_json):
         """Processes Semantic Scholar JSON results into a standardized format."""
@@ -771,10 +836,15 @@ class SemanticScholarService:
                 logger.warning(f"Invalid or empty Semantic Scholar results received: {results_json}")
             return processed
 
+        total_papers = len(results_json.get('data', []))
+        citation_filtered = 0
+        abstract_filtered = 0
+        
         for item in results_json.get('data', []):
             # Skip if abstract is missing or too short
             abstract = item.get('abstract')
             if not abstract or len(abstract) < 50:
+                abstract_filtered += 1
                 continue
 
             # Extract DOI from externalIds
@@ -794,7 +864,7 @@ class SemanticScholarService:
             # Extract citation count
             citation_count = item.get('citationCount', 0)
 
-            # Only include if citation count > 5 (consistent with other sources)
+            # Only include if citation count > 50 (consistent with other sources)
             if citation_count > 50:
                 processed.append({
                     "doi": doi,
@@ -805,6 +875,12 @@ class SemanticScholarService:
                     "source_api": "semantic_scholar",
                     "citation_count": citation_count
                 })
+            else:
+                citation_filtered += 1
+        
+        # Log filtering stats
+        logger.info(f"Semantic Scholar filtering stats: {total_papers} papers found, {abstract_filtered} filtered for abstract issues, {citation_filtered} filtered for <50 citations, {len(processed)} papers kept")
+        
         return processed
 # --- End Semantic Scholar Service ---
 
@@ -1014,7 +1090,12 @@ class RAGVerificationService:
         logger.info(f"Extracted Keywords: {keywords}, Category: {category}")
 
         # 2. Retrieve Evidence - Concurrently
-        max_results_per_source = app.config['MAX_EVIDENCE_TO_RETRIEVE']
+        # --- Use specific config values --- 
+        openalex_max = app.config['OPENALEX_MAX_RESULTS']
+        crossref_max = app.config['CROSSREF_MAX_RESULTS']
+        semantic_max = app.config['SEMANTIC_SCHOLAR_MAX_RESULTS']
+        # --- End specific config values ---
+
         all_studies_data = []
         openalex_studies = []
         crossref_studies = []
@@ -1022,17 +1103,17 @@ class RAGVerificationService:
 
         # Use ThreadPoolExecutor for concurrent API calls
         with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-            # Submit tasks
-            future_openalex = executor.submit(self.openalex.search_works_by_keyword, keyword_string, per_page=max_results_per_source)
-            future_crossref = executor.submit(self.crossref.search_works_by_keyword, keyword_string, rows=max_results_per_source)
-            future_semantic = executor.submit(self.semantic_scholar.search_works_by_keyword, keyword_string, limit=max_results_per_source)
+            # Submit tasks with specific limits
+            future_openalex = executor.submit(self.openalex.search_works_by_keyword, keyword_string, per_page=openalex_max)
+            future_crossref = executor.submit(self.crossref.search_works_by_keyword, keyword_string, rows=crossref_max)
+            future_semantic = executor.submit(self.semantic_scholar.search_works_by_keyword, keyword_string, limit=semantic_max)
 
             # Process results as they complete
             try:
                 openalex_data = future_openalex.result()
                 if openalex_data:
                     openalex_studies = self.openalex.process_results(openalex_data)
-                logger.info(f"Retrieved {len(openalex_studies)} studies from OpenAlex.")
+                logger.info(f"Retrieved {len(openalex_studies)} studies from OpenAlex (requested {openalex_max}).")
             except Exception as e:
                 logger.error(f"Error retrieving data from OpenAlex: {e}")
 
@@ -1040,7 +1121,7 @@ class RAGVerificationService:
                 crossref_data = future_crossref.result()
                 if crossref_data:
                     crossref_studies = self.crossref.process_results(crossref_data)
-                logger.info(f"Retrieved {len(crossref_studies)} studies from CrossRef.")
+                logger.info(f"Retrieved {len(crossref_studies)} studies from CrossRef (requested {crossref_max}).")
             except Exception as e:
                 logger.error(f"Error retrieving data from CrossRef: {e}")
 
@@ -1048,7 +1129,7 @@ class RAGVerificationService:
                 semantic_scholar_data = future_semantic.result()
                 if semantic_scholar_data:
                     semantic_scholar_studies = self.semantic_scholar.process_results(semantic_scholar_data)
-                logger.info(f"Retrieved {len(semantic_scholar_studies)} studies from Semantic Scholar.")
+                logger.info(f"Retrieved {len(semantic_scholar_studies)} studies from Semantic Scholar (requested {semantic_max}).")
             except Exception as e:
                 logger.error(f"Error retrieving data from Semantic Scholar: {e}")
 
