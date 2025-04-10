@@ -348,6 +348,9 @@ const PaperDisplay = ({ claim }) => {
   // Main render method
   if (loading) return (
     <div className="loading-container">
+      <div className="cost-note-box">
+        <p>💡 Please note: Each verification involves significant computational resources and costs. Pls save our pockets and go easy with the queries. Thank you :) </p>
+      </div>
       <div className="loading-progress-container">
         <div 
           className="loading-progress-bar" 
