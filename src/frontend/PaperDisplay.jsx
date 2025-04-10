@@ -91,7 +91,7 @@ const PaperDisplay = ({ claim }) => {
       progressThroughStages();
       
       try {
-        const response = await fetch(`http://127.0.0.1:8080/api/verify_claim`, {
+        const response = await fetch(`https://final-project-15-mountains-production.up.railway.app/api/verify_claim`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -348,6 +348,9 @@ const PaperDisplay = ({ claim }) => {
   // Main render method
   if (loading) return (
     <div className="loading-container">
+      <div className="cost-note-box">
+        <p>💡 Please note: Each verification involves significant computational resources and costs. Pls save our pockets and go easy with the queries. Thank you :) </p>
+      </div>
       <div className="loading-progress-container">
         <div 
           className="loading-progress-bar" 

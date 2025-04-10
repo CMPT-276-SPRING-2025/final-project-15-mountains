@@ -129,10 +129,13 @@ main {
 .search-button {
   background-color: white;
   color: var(--color-background);
+  box-shadow: 0 0 12px 2px rgba(93, 156, 245, 0.3);
+  transition: background-color 0.2s ease, box-shadow 0.3s ease;
 }
 
 .search-button:hover {
   background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 18px 4px rgba(93, 156, 245, 0.4);
 }
 
 .sign-in-button {
@@ -168,6 +171,8 @@ main {
   line-height: 1.2;
   margin-bottom: 3rem;
   position: relative;
+  animation: illuminateTitle 1.5s forwards 0.5s;
+  color: var(--color-text);
 }
 
 .hero-title::after {
@@ -179,8 +184,12 @@ main {
   width: 60%;
   height: 4px;
   background: linear-gradient(90deg, rgba(93, 156, 245, 0) 0%, var(--color-primary) 50%, rgba(93, 156, 245, 0) 100%);
-  box-shadow: 0 0 20px 5px var(--color-glow);
+  /* Set initial state for animation */
+  opacity: 0;
+  /* box-shadow: 0 0 20px 5px var(--color-glow); <- Remove static shadow */
   border-radius: 2px;
+  /* Apply animation */
+  animation: tubelightFlicker 1.5s forwards 0.5s; /* name duration fill-mode delay */
 }
 
 .highlight {
@@ -230,11 +239,12 @@ main {
 }
 
 .example-queries {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 1rem;
-  padding: 2.5rem;
+  /* Remove background and padding to eliminate the box */
+  /* background-color: rgba(255, 255, 255, 0.05); */
+  /* border-radius: 1rem; */
+  /* padding: 2.5rem; */
   max-width: 800px;
-  margin: 3rem auto;
+  margin: 3rem auto; /* Keep margin for spacing */
 }
 
 .example-title {
@@ -259,20 +269,122 @@ main {
 }
 
 .query-button {
+  display: inline-block;
   background-color: var(--color-button);
   color: var(--color-text);
-  border: none;
+  border: 1px solid rgba(93, 156, 245, 0.2);
+  padding: 0.75rem 1.5rem;
   border-radius: 9999px;
-  padding: 0.75rem 1.25rem;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.3s ease;
   text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.query-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(60deg, transparent, var(--color-primary), transparent);
+  background-size: 200% 100%;
+  background-position: -100% 0;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+  animation: moveGlowBorder 3s linear infinite;
+  z-index: -1;
 }
 
 .query-button:hover {
   background-color: var(--color-button-hover);
+  color: var(--color-text);
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+@keyframes moveGlowBorder {
+  to {
+    background-position: 100% 0;
+  }
+}
+
+@keyframes tubelightFlicker {
+  0% {
+    opacity: 0;
+    box-shadow: none;
+  }
+  10% {
+    opacity: 0.6;
+    box-shadow: 0 0 15px 3px rgba(93, 156, 245, 0.2);
+  }
+  15% {
+    opacity: 0.3;
+    box-shadow: 0 0 10px 2px rgba(93, 156, 245, 0.15);
+  }
+  25% {
+    opacity: 0.9;
+    box-shadow: 0 0 25px 6px rgba(93, 156, 245, 0.35);
+  }
+  35% {
+    opacity: 0.5;
+    box-shadow: 0 0 18px 4px rgba(93, 156, 245, 0.25);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 20px 5px var(--color-glow); /* Final glow state */
+  }
+  60% { /* Slight dim before final */
+    opacity: 0.95;
+    box-shadow: 0 0 19px 5px rgba(93, 156, 245, 0.28);
+  }
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 20px 5px var(--color-glow); /* Ensure final state */
+  }
+}
+
+/* Add keyframes for title illumination */
+@keyframes illuminateTitle {
+  0% {
+    text-shadow: none;
+  }
+  10% {
+    /* Softer, wider glow */
+    text-shadow: 0 2px 25px rgba(93, 156, 245, 0.4);
+  }
+  15% {
+    /* Dimmer soft flicker */
+    text-shadow: 0 2px 20px rgba(93, 156, 245, 0.25);
+  }
+  25% {
+    /* Brighter soft flicker */
+    text-shadow: 0 3px 35px rgba(93, 156, 245, 0.6);
+  }
+  35% {
+    /* Medium soft flicker */
+    text-shadow: 0 3px 30px rgba(93, 156, 245, 0.45);
+  }
+  50% {
+    /* Final steady soft glow state */
+    text-shadow: 0 4px 35px rgba(93, 156, 245, 0.5); /* Using rgba for consistency */
+  }
+  60% { 
+    /* Slight dim matching tubelight */
+    text-shadow: 0 4px 33px rgba(93, 156, 245, 0.48);
+  }
+  100% {
+    /* Ensure final steady soft glow state */
+    text-shadow: 0 4px 35px rgba(93, 156, 245, 0.5);
+  }
 }
 
 /* Responsive Styles */
@@ -1462,6 +1574,82 @@ main {
   .footer-container {
     flex-direction: column;
     text-align: center;
+  }
+}
+
+.features-page {
+  padding: 4rem 0;
+  text-align: center;
+}
+
+.features-title {
+  font-size: 2.5rem; /* Adjust as needed */
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}
+
+.features-subtitle {
+  font-size: 1.1rem;
+  color: var(--color-text-secondary);
+  max-width: 600px;
+  margin: 0 auto 3rem;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.feature-card {
+  background-color: rgba(255, 255, 255, 0.05); /* Slightly transparent white */
+  border: 1px solid rgba(93, 156, 245, 0.2); /* Subtle blue border */
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align content to the start */
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(93, 156, 245, 0.15);
+}
+
+.feature-icon {
+  font-size: 2.5rem; /* Adjust size as needed */
+  margin-bottom: 1rem;
+  color: var(--color-primary);
+  /* If using actual icons, you might adjust display properties */
+  /* background: linear-gradient(135deg, var(--color-primary), #a3caff); */
+  /* -webkit-background-clip: text; */
+  /* -webkit-text-fill-color: transparent; */
+}
+
+.feature-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--color-text); /* Ensure title text is white */
+}
+
+.feature-card-description {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .features-title {
+    font-size: 2rem;
+  }
+  .features-grid {
+    grid-template-columns: 1fr; /* Stack cards on smaller screens */
   }
 }
 

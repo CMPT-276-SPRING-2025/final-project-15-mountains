@@ -16,16 +16,21 @@ export default function Header() {
             </div>
             <nav className="nav">
               <ul className="nav-list">
+                {/* Remove Features link from here */}
               </ul>
             </nav>
          
             <div className="actions">
-              <button className="search-button">
+              <Link to="/" className="search-button">
                 Search
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M21 21L16.65 16.65M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-              </button>
+              </Link>
+              {/* Add Features link here */}
+              <Link to="/features" className="search-button">
+                Features
+              </Link>
               <Link to="/contact" className="search-button contact-button">
                 Contact
               </Link>
