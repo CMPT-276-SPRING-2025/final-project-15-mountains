@@ -100,7 +100,6 @@ const PaperDisplay = ({ claim }) => {
             claim: claim
           }),
         });
-      }
         
         if (!response.ok) {
           throw new Error(`API request failed with status ${response.status}`);
