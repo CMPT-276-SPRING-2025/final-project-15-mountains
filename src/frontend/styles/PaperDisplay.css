@@ -653,13 +653,15 @@
 
 /* Error and No Results styling */
 .error-message {
-  color: #ef4444;
-  padding: 1rem;
+  color: #3b82f6;
+  padding: 1.5rem;
   text-align: center;
   font-weight: 600;
-  background-color: rgba(239, 68, 68, 0.1);
+  background-color: rgba(59, 130, 246, 0.1);
   border-radius: 0.5rem;
-  margin: 1rem 0;
+  margin: 1.5rem 0;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .no-results {
