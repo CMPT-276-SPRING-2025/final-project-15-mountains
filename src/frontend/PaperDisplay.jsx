@@ -369,6 +369,9 @@ const PaperDisplay = ({ claim }) => {
           <p className="loading-almost-done">Almost done! Our AI is reviewing the evidence and calculating the claim's accuracy score...</p>
         }
       </div>
+      <div className="vote-message">
+        <p>🗳️ Vote for us please! 💙</p>
+      </div>
     </div>
   );
   
