@@ -91,7 +91,7 @@ const PaperDisplay = ({ claim }) => {
       progressThroughStages();
       
       try {
-        const response = await fetch(`https://final-project-15-mountains-production.up.railway.app/api/verify_claim`, {
+        const response = await fetch(`http://127.0.0.1:8080/api/verify_claim`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -520,6 +520,7 @@ const PaperDisplay = ({ claim }) => {
                 <option value="crossref">CrossRef</option>
                 <option value="openalex">OpenAlex</option>
                 <option value="semantic_scholar">Semantic Scholar</option>
+                <option value="pubmed">PubMed</option>
               </select>
             </div>
           </div>

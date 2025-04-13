@@ -220,6 +220,11 @@
   color: #7c3aed;
 }
 
+.source-pubmed {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #d97706;
+}
+
 .source-default {
   background-color: rgba(107, 114, 128, 0.15);
   color: #4b5563;
@@ -235,6 +240,10 @@
 
 .research-paper-card:hover .source-semantic-scholar {
   background-color: rgba(139, 92, 246, 0.25);
+}
+
+.research-paper-card:hover .source-pubmed {
+  background-color: rgba(245, 158, 11, 0.25);
 }
 
 .research-paper-card:hover .source-default {
