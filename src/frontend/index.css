@@ -1840,5 +1840,26 @@ main {
    /* background-color: rgba(93, 156, 245, 0.1); */
 }
 
+@media (max-width: 768px) {
+  .papers-container {
+    padding: 0 1rem; /* Equal padding on both sides */
+    margin: 30px auto;
+    width: 92%; /* Slightly less than full width for better look */
+  }
+  
+  .research-paper-card {
+    padding: 25px;
+  }
+  
+  .research-paper-card h1 {
+    font-size: 20px;
+  }
+
+  .research-paper-card .badge {
+    top: 20px;
+    right: 20px;
+  }
+}
+
 
 
