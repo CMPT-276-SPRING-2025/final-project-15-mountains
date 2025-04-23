@@ -559,11 +559,169 @@
 
 @media (max-width: 768px) {
   .back-to-top-button {
-    padding: 10px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
   }
-  
   .back-to-top-button span {
-    display: none;
+    display: none; /* Hide text on small screens */
+  }
+
+  /* Mobile adjustments for Filter Box */
+  .evidence-filter-box {
+    max-width: 100%;
+    padding: 0.8rem;
+    margin: 0.8rem 0;
+    border-radius: 0.75rem;
+  }
+
+  .filter-header {
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.4rem;
+  }
+
+  .evidence-filter-box h3 {
+    font-size: 1rem;
+  }
+
+  .filter-results-count {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .filter-controls {
+    gap: 0.8rem;
+  }
+
+  .filter-group label {
+    font-size: 0.8rem;
+  }
+
+  .filter-select {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.9rem;
+    padding-right: 2rem;
+    background-size: 0.8rem;
+  }
+
+  .date-range-header {
+    margin-bottom: 0.5rem;
+  }
+
+  .date-range-value {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.6rem;
+  }
+
+  .date-slider-container {
+    height: 30px;
+    margin: 0.5rem 0 1rem;
+  }
+
+  .year-marker {
+    font-size: 0.7rem;
+  }
+
+  /* Reduce padding and font size in summary card */
+  .llm-summary-card {
+    padding: 0.8rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0.75rem;
+  }
+  .claim-text {
+    margin: 1rem 0;
+    padding: 0 1rem;
+  }
+  .claim-text p {
+    font-size: 0.9rem;
+    margin-bottom: 0.6rem;
+    line-height: 1.5;
+  }
+  .verdict-container {
+    margin: 1rem 0;
+    padding: 0.8rem;
+    border-radius: 0.75rem;
+  }
+  .verdict-badge {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.85rem;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+  }
+  .verdict-icon {
+    font-size: 1.2rem;
+  }
+  .verdict-text {
+    font-size: 0.85rem;
+  }
+  .accuracy-display {
+    max-width: 300px;
+  }
+  .accuracy-label {
+    font-size: 0.75rem;
+    margin-bottom: 0.3rem;
+  }
+  .accuracy-bar-container {
+    height: 1.25rem;
+    margin-bottom: 0.3rem;
+  }
+  .accuracy-value {
+    font-size: 0.75rem;
+    right: 8px;
+    padding: 0 5px;
+  }
+  .summary-stats {
+    gap: 0.6rem;
+    margin-top: 1rem;
+  }
+  .stat-value {
+    font-size: 0.9rem;
+  }
+  .stat-label {
+    font-size: 0.7rem;
+  }
+  .reasoning-text {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-top: 8px;
+  }
+  .reasoning-title {
+    font-size: 0.9rem;
+  }
+  .keywords-container {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+  }
+  .keywords-title {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+  .keyword-chip {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.4rem;
+  }
+
+  /* Adjust Simplify button position */
+  .simplify-button-container {
+    display: block;
+    width: 100%;
+    text-align: right;
+    margin-top: -0.2rem;
+  }
+
+  .reasoning-content {
+    padding-bottom: 1rem;
+  }
+
+  .simplify-button {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+  }
+
+  /* Move paper count badge slightly left on mobile */
+  .paper-count-badge {
+    position: relative;
+    left: -4rem; /* Adjust this negative value as needed */
   }
 }
 

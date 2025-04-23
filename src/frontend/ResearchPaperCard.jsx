@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './styles/ResearchPaperCard.css';
 
 const ResearchPaperCard = ({
@@ -15,6 +15,8 @@ const ResearchPaperCard = ({
   url = '',
   citation_count = 0
 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   // Format date to DD/MM/YYYY if provided as a Date object
   const formattedDate = typeof date === 'object' && date instanceof Date
     ? `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`
@@ -32,8 +34,13 @@ const ResearchPaperCard = ({
     return 'source-default';
   };
 
+  // Toggle card expansion
+  const toggleExpansion = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   return (
-    <div className="research-paper-card">
+    <div className={`research-paper-card ${isExpanded ? 'expanded' : ''}`}>
       {/* Badge */}
       {badgeText && (
         <div className="badge">
@@ -87,10 +94,19 @@ const ResearchPaperCard = ({
         </div>
       )}
       
-      {/* Abstract Section */}
+      {/* Abstract Section - Now Collapsible via CSS */}
       <div className="abstract">
-        <h2>Abstract</h2>
-        <p>{abstract}</p>
+        {/* Desktop title - hidden on mobile via CSS */}
+        <h2 className="abstract-title-desktop">Abstract</h2>
+
+        {/* Abstract content - Always rendered, visibility controlled by CSS */}
+        <p className="abstract-content">{abstract}</p>
+
+        {/* Mobile toggle button - hidden on desktop via CSS */}
+        <button onClick={toggleExpansion} className="toggle-details-button">
+          {isExpanded ? 'Hide Details' : 'Show Details'}
+          <span className={`arrow ${isExpanded ? 'up' : 'down'}`}></span>
+        </button>
       </div>
       
       {/* Publisher */}

@@ -431,6 +431,12 @@ const PaperDisplay = ({ claim }) => {
             </div>
             
             <div className="reasoning-content">
+              <div className="reasoning-text">
+                {showSimplified 
+                  ? simplifiedReasoning
+                  : parseDetailedReasoning(detailedReasoning)}
+              </div>
+
               <div className="simplify-button-container">
                 <MagneticElement strength={35} distance={80}>
                   <button 
@@ -460,12 +466,6 @@ const PaperDisplay = ({ claim }) => {
                     <span>{showSimplified ? "Technical" : "Simplify"}</span>
                   </button>
                 </MagneticElement>
-              </div>
-              
-              <div className="reasoning-text">
-                {showSimplified 
-                  ? simplifiedReasoning
-                  : parseDetailedReasoning(detailedReasoning)}
               </div>
             </div>
           </div>

@@ -20,7 +20,7 @@
 
 .research-paper-card:hover .badge {
   background-color: #0369a1;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(2, 132, 199, 0.2);
 }
 
 .research-paper-card:hover .paper-title {
@@ -248,5 +248,183 @@
 }
 
 .research-paper-card:hover .badge {
-  animation: badgePulse 1.5s ease infinite;
+  /* animation: badgePulse 0.8s infinite; */ /* Optional: Keep or remove pulse animation */
+  box-shadow: 0 4px 8px rgba(2, 132, 199, 0.2);
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .research-paper-card {
+    padding: 15px; /* Reduce padding */
+    margin-bottom: 15px;
+  }
+
+  .paper-title {
+    font-size: 1.1rem; /* Reduce title font size */
+    padding-right: 70px; /* Adjust padding for smaller badge */
+    margin-bottom: 6px; /* Reduced */
+  }
+
+  .author-date {
+    font-size: 0.8rem; /* Smaller author/date text */
+    margin-bottom: 6px; /* Reduced */
+  }
+
+  .categories {
+    margin-bottom: 6px; /* Reduced */
+  }
+
+  .category {
+    font-size: 0.7rem; /* Smaller category tags */
+    padding: 2px 5px;
+  }
+
+  .doi-info {
+    font-size: 0.75rem; /* Smaller DOI info text */
+    display: flex; /* Use flexbox for better wrapping */
+    flex-wrap: wrap; /* Allow items to wrap */
+    gap: 4px 8px; /* Add gap between wrapped items */
+    line-height: 1.4;
+    margin-bottom: 8px; /* Reduced */
+  }
+
+  .doi-info span {
+    margin-right: 0; /* Remove fixed margin */
+  }
+
+  .citation-count {
+    margin-left: 0; /* Remove margin */
+    font-size: 0.75rem;
+  }
+
+  .citation-count::before {
+    font-size: 12px;
+  }
+
+  .paper-url {
+    margin: 8px 0; /* Reduced */
+  }
+
+  .paper-url a {
+    font-size: 0.8rem; /* Smaller link text */
+    padding: 5px 10px;
+  }
+
+  .abstract {
+    margin-top: 10px; /* Reduced */
+  }
+
+  .abstract h2 { /* Default h2 - now desktop only */
+    font-size: 1.1rem;
+    color: #374151;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .abstract p { /* Default p - now abstract content */
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #4b5563;
+    display: block; /* Ensure visible by default (desktop) */
+  }
+
+  .publisher {
+    font-size: 0.75rem; /* Smaller publisher text */
+  }
+
+  .badge {
+    padding: 3px 7px;
+    font-size: 0.7rem; /* Smaller badge */
+    top: 8px;
+    right: 8px;
+  }
+
+  .source-label {
+    font-size: 0.7rem;
+    padding: 2px 5px;
+  }
+
+  /* Hide abstract content by default on mobile */
+  .abstract-content {
+    display: none;
+  }
+
+  /* Show abstract content when card is expanded on mobile */
+  .research-paper-card.expanded .abstract-content {
+    display: block;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-top: 8px;
+  }
+
+  /* Hide desktop abstract title on mobile */
+  .abstract-title-desktop {
+    display: none;
+  }
+
+  /* Show and style mobile toggle button */
+  /* Renamed class */
+  .toggle-details-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background-color 0.2s ease;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .toggle-details-button:hover {
+    background-color: #e5e7eb;
+  }
+
+  /* Style the arrow */
+  /* No change needed here, controlled by up/down class added in JSX */
+  .toggle-details-button .arrow {
+    display: inline-block;
+    border: solid #374151;
+    border-width: 0 2px 2px 0;
+    padding: 3px;
+    transition: transform 0.2s ease;
+  }
+
+  .toggle-details-button .arrow.down {
+    transform: rotate(45deg);
+  }
+
+  .toggle-details-button .arrow.up {
+    transform: rotate(-135deg);
+  }
+}
+
+/* Abstract Section Styling */
+.abstract {
+  margin-top: 15px;
+}
+
+.abstract h2 { /* Default h2 - now desktop only */
+  font-size: 1.1rem;
+  color: #374151;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.abstract p { /* Default p - now abstract content */
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+/* Toggle button - hidden by default (desktop) */
+/* Renamed class */
+.toggle-details-button {
+  display: none;
 }
