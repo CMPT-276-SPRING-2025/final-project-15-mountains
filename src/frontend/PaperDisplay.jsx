@@ -136,7 +136,7 @@ const PaperDisplay = ({ claim }) => {
         // }, 500); // REMOVED
       } catch (err) {
         console.error("Error fetching verification results:", err);
-        setError('Failed to verify claim. Please try again.');
+        setError('The server has been temporarily shut down during these hours to save costs. Please try again later or contact our team for assistance.');
         setLoading(false);
         // Clear any remaining timers
         if (timerRef.current) {
@@ -370,10 +370,21 @@ const PaperDisplay = ({ claim }) => {
           <p className="loading-almost-done">Almost done! Our AI is reviewing the evidence and calculating the claim's accuracy score...</p>
         }
       </div>
+      <div className="vote-message">
+        <p>🗳️ Vote for us please! 💙</p>
+      </div>
     </div>
   );
   
-  if (error) return <div className="error-message">{error}</div>;
+  if (error) return (
+    <div className="error-message">
+      <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🕒</div>
+      {error}
+      <div style={{ marginTop: '1rem', fontSize: '0.9rem', opacity: '0.8' }}>
+        Our servers are usually active during standard business hours. Please check back later!
+      </div>
+    </div>
+  );
   if (!verificationResult) return <div className="no-results">No verification results for "{claim}"</div>;
 
   // Format evidence details for display
@@ -513,6 +524,7 @@ const PaperDisplay = ({ claim }) => {
                 <option value="crossref">CrossRef</option>
                 <option value="openalex">OpenAlex</option>
                 <option value="semantic_scholar">Semantic Scholar</option>
+                <option value="pubmed">PubMed</option>
               </select>
             </div>
           </div>

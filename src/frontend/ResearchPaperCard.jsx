@@ -29,6 +29,7 @@ const ResearchPaperCard = ({
     if (sourceLower.includes('crossref')) return 'source-crossref';
     if (sourceLower.includes('openalex')) return 'source-openalex';
     if (sourceLower.includes('semantic')) return 'source-semantic-scholar';
+    if (sourceLower.includes('pubmed')) return 'source-pubmed';
     
     // Default fallback
     return 'source-default';
